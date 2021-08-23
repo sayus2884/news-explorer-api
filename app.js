@@ -1,8 +1,11 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 require('dotenv').config();
 
 const NotFoundError = require('./errors/not-found-err');
+
+const { createUser, login } = require('./controllers/users');
 
 const { PORT = 8080 } = process.env;
 
@@ -11,6 +14,11 @@ const app = express();
 mongoose.connect('mongodb://localhost:27017/newsdb');
 
 app
+
+  .use(bodyParser.json())
+
+  .post('/signin', login)
+  .post('/signup', createUser)
 
   .use('*', () => {
     throw new NotFoundError('Requested resource not found');
