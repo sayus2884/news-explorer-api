@@ -15,7 +15,7 @@ app
   .use('*', () => {
     throw new NotFoundError('Requested resource not found');
   })
-  
+
   .use((err, req, res, next) => {
     const { statusCode, message } = err;
 

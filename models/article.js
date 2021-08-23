@@ -1,4 +1,5 @@
 const { Schema, model } = require('mongoose');
+const { validateUrl } = require('../utils/validation');
 
 const articleSchema = new Schema({
   keyword: {
@@ -24,19 +25,24 @@ const articleSchema = new Schema({
   link: {
     type: String,
     required: true,
-    // set URL validation
+    validate: {
+      validator: (v) => validateUrl(v),
+      message: 'Invalid URL.',
+    },
   },
   image: {
     type: String,
     required: true,
-    // set URL validation
-
+    validate: {
+      validator: (v) => validateUrl(v),
+      message: 'Invalid URL.',
+    },
   },
   owner: {
     type: String,
     required: true,
-    select: false
-  }
-})
+    select: false,
+  },
+});
 
 module.exports = model('article', articleSchema);
