@@ -1,6 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const helmet = require('helmet');
+const cors = require('cors');
+const rateLimit = require('express-rate-limit');
 const { errors, celebrate, Joi } = require('celebrate');
 require('dotenv').config();
 
@@ -15,6 +19,11 @@ const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const { createUser, login } = require('./controllers/users');
 
+const requestLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 50,
+});
+
 const { PORT = 8080 } = process.env;
 
 const app = express();
@@ -22,10 +31,14 @@ const app = express();
 mongoose.connect('mongodb://localhost:27017/newsdb');
 
 app
-
+  .use(cors())
+  .options('*', cors())
   .use(requestLogger)
 
+  .use(requestLimiter)
+  .use(helmet())
   .use(bodyParser.json())
+  .use(cookieParser())
 
   .post('/signin', celebrate({
     body: Joi.object().keys({
@@ -45,7 +58,6 @@ app
 
   .use(userRoutes)
   .use(articleRoutes)
-
   .use('*', () => {
     throw new NotFoundError('Requested resource not found');
   })
@@ -54,8 +66,6 @@ app
   .use(errors())
   .use((err, req, res, next) => {
     const { statusCode, message } = err;
-
-    console.log(err);
 
     res.status(statusCode)
       .send({ message: statusCode === 500 ? 'An error occured on the server.' : message });
