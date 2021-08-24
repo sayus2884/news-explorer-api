@@ -2,7 +2,7 @@ const Articles = require('../models/article');
 
 const NotFoundError = require('../errors/not-found-err');
 const NotAuthorizedError = require('../errors/not-authorized-err');
-const AlreadyExistsError = require('../errors/already-exists-err');
+const ForbiddenError = require('../errors/forbidden-err');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -27,7 +27,28 @@ const createArticle = (req, res, next) => {
     .catch(next)
 }
 
+const deleteArticle = (req, res, next) => {
+  const { articleId } = req.params;
+
+  Articles.findById(articleId).select('+owner')
+    .then((article) => {
+      if (!article) {
+        throw new NotFoundError("Article not found.");
+      }
+
+      if (article.owner !== req.user._id) {
+        throw new ForbiddenError("Not owner of card")
+      }
+    })
+
+    .then(() => Articles.findByIdAndDelete(articleId))
+    .then(() => res.send({ message: "Card deleted." }))
+
+    .catch(next)
+}
+
 module.exports = {
   getArticles,
-  createArticle
+  createArticle,
+  deleteArticle
 }
