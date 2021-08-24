@@ -5,6 +5,9 @@ require('dotenv').config();
 
 const NotFoundError = require('./errors/not-found-err');
 
+const userRoutes = require('./routes/users')
+
+const auth = require('./middlewares/auth');
 const { createUser, login } = require('./controllers/users');
 
 const { PORT = 8080 } = process.env;
@@ -19,6 +22,10 @@ app
 
   .post('/signin', login)
   .post('/signup', createUser)
+
+  .use(auth)
+
+  .use(userRoutes)
 
   .use('*', () => {
     throw new NotFoundError('Requested resource not found');
