@@ -46,7 +46,6 @@ const login = (req, res, next) => {
     .catch(next);
 }
 
-
 const createUser = (req, res, next) => {
   const { name, email, password } = req.body;
 
@@ -69,7 +68,24 @@ const createUser = (req, res, next) => {
     .catch(next);
 }
 
+const getCurrentUser = (req, res, next) => {
+  const { _id } = req.user;
+
+  User.findById(_id)
+    .then((user) => {
+
+      if (!user) {
+        throw new NotFoundError('User ID not found.');
+      }
+
+      res.send(user);
+    })
+
+    .catch(next)
+}
+
 module.exports = {
   login,
-  createUser
+  createUser,
+  getCurrentUser
 }
