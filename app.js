@@ -9,6 +9,8 @@ const userRoutes = require('./routes/users')
 const articleRoutes = require('./routes/articles')
 
 const auth = require('./middlewares/auth');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
+
 const { createUser, login } = require('./controllers/users');
 
 const { PORT = 8080 } = process.env;
@@ -18,6 +20,8 @@ const app = express();
 mongoose.connect('mongodb://localhost:27017/newsdb');
 
 app
+
+  .use(requestLogger)
 
   .use(bodyParser.json())
 
@@ -33,6 +37,7 @@ app
     throw new NotFoundError('Requested resource not found');
   })
 
+  .use(errorLogger)
   .use((err, req, res, next) => {
     const { statusCode, message } = err;
 
