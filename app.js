@@ -1,8 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const { errors, celebrate, Joi } = require('celebrate');
 require('dotenv').config();
 
+const { validateEmail } = require('./utils/validation');
 const NotFoundError = require('./errors/not-found-err');
 
 const userRoutes = require('./routes/users')
@@ -25,8 +27,19 @@ app
 
   .use(bodyParser.json())
 
-  .post('/signin', login)
-  .post('/signup', createUser)
+  .post('/signin', celebrate({
+    body: Joi.object().keys({
+      email: Joi.string().required().custom(validateEmail),
+      password: Joi.string().required(),
+    })
+  }), login)
+  .post('/signup', celebrate({
+    body: Joi.object().keys({
+      name: Joi.string().required().min(2).max(30),
+      email: Joi.string().required().custom(validateEmail),
+      password: Joi.string().required(),
+    })
+  }), createUser)
 
   .use(auth)
 
@@ -38,6 +51,7 @@ app
   })
 
   .use(errorLogger)
+  .use(errors())
   .use((err, req, res, next) => {
     const { statusCode, message } = err;
 
