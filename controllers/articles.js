@@ -25,7 +25,8 @@ const createArticle = (req, res, next) => {
     image,
     owner: req.user._id,
   })
-    .then(() => res.send({
+    .then((article) => res.send({
+      _id: article._id,
       keyword, title, text, date, source, link, image,
     }))
 
