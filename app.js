@@ -24,11 +24,11 @@ const requestLimiter = rateLimit({
   max: 50,
 });
 
-const { PORT = 8080 } = process.env;
+const { PORT = 8080, DB = 'mongodb://localhost:27017/dev' } = process.env;
 
 const app = express();
 
-mongoose.connect('mongodb://localhost:27017/newsdb');
+mongoose.connect(DB);
 
 app
   .use(cors())
@@ -71,6 +71,4 @@ app
       .send({ message: statusCode === 500 ? 'An error occured on the server.' : message });
   })
 
-  .listen(PORT, () => {
-    console.log(`App listening at port ${PORT}`);
-  });
+  .listen(PORT, () => {});
