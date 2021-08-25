@@ -11,8 +11,7 @@ require('dotenv').config();
 const { validateEmail } = require('./utils/validation');
 const NotFoundError = require('./errors/not-found-err');
 
-const userRoutes = require('./routes/users');
-const articleRoutes = require('./routes/articles');
+const routes = require('./routes');
 
 const auth = require('./middlewares/auth');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
@@ -56,8 +55,7 @@ app
 
   .use(auth)
 
-  .use(userRoutes)
-  .use(articleRoutes)
+  .use(routes)
   .use('*', () => {
     throw new NotFoundError('Requested resource not found');
   })
