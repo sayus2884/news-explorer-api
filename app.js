@@ -35,7 +35,7 @@ app
   .options('*', cors())
   .use(requestLogger)
 
-  .use(requestLimiter)
+  // .use(requestLimiter)
   .use(helmet())
   .use(bodyParser.json())
   .use(cookieParser())
