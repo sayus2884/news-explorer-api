@@ -11,8 +11,8 @@ require('dotenv').config();
 const { validateEmail } = require('./utils/validation');
 const NotFoundError = require('./errors/not-found-err');
 
-const userRoutes = require('./routes/users')
-const articleRoutes = require('./routes/articles')
+const userRoutes = require('./routes/users');
+const articleRoutes = require('./routes/articles');
 
 const auth = require('./middlewares/auth');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
@@ -35,7 +35,7 @@ app
   .options('*', cors())
   .use(requestLogger)
 
-  // .use(requestLimiter)
+  .use(requestLimiter)
   .use(helmet())
   .use(bodyParser.json())
   .use(cookieParser())
@@ -44,14 +44,14 @@ app
     body: Joi.object().keys({
       email: Joi.string().required().custom(validateEmail),
       password: Joi.string().required(),
-    })
+    }),
   }), login)
   .post('/signup', celebrate({
     body: Joi.object().keys({
       name: Joi.string().required().min(2).max(30),
       email: Joi.string().required().custom(validateEmail),
       password: Joi.string().required(),
-    })
+    }),
   }), createUser)
 
   .use(auth)

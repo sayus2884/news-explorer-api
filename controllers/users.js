@@ -1,6 +1,6 @@
-const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const User = require('../models/user');
 
 const NotFoundError = require('../errors/not-found-err');
 const NotAuthorizedError = require('../errors/not-authorized-err');
@@ -15,12 +15,12 @@ const login = (req, res, next) => {
   User.findOne({ email }).select('+password')
     .then((data) => {
       if (!data) {
-        throw new NotFoundError('Email does not exist.')
+        throw new NotFoundError('Email does not exist.');
       }
 
       user = data;
 
-      return bcrypt.compare(password, user.password)
+      return bcrypt.compare(password, user.password);
     })
 
     .then((isMatch) => {
@@ -31,7 +31,7 @@ const login = (req, res, next) => {
       const token = jwt.sign(
         { _id: user._id },
         NODE_ENV === 'production' ? JWT_SECRET : 'dev-token',
-        { expiresIn: '7d' }
+        { expiresIn: '7d' },
       );
 
       res.cookie('jwt', token, {
@@ -44,14 +44,13 @@ const login = (req, res, next) => {
     })
 
     .catch(next);
-}
+};
 
 const createUser = (req, res, next) => {
   const { name, email, password } = req.body;
 
   User.findOne({ email })
     .then((user) => {
-
       if (user) {
         throw new AlreadyExistsError('User already exists.');
       }
@@ -60,20 +59,19 @@ const createUser = (req, res, next) => {
     .then(() => bcrypt.hash(password, 10))
 
     .then((hashed) => User.create({
-      name, email, password: hashed
+      name, email, password: hashed,
     }))
 
-    .then((user) => res.send({ name, email }))
+    .then(() => res.send({ name, email }))
 
     .catch(next);
-}
+};
 
 const getCurrentUser = (req, res, next) => {
   const { _id } = req.user;
 
   User.findById(_id)
     .then((user) => {
-
       if (!user) {
         throw new NotFoundError('User ID not found.');
       }
@@ -81,11 +79,11 @@ const getCurrentUser = (req, res, next) => {
       res.send(user);
     })
 
-    .catch(next)
-}
+    .catch(next);
+};
 
 module.exports = {
   login,
   createUser,
-  getCurrentUser
-}
+  getCurrentUser,
+};

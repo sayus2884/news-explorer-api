@@ -1,31 +1,36 @@
 const Articles = require('../models/article');
 
 const NotFoundError = require('../errors/not-found-err');
-const NotAuthorizedError = require('../errors/not-authorized-err');
 const ForbiddenError = require('../errors/forbidden-err');
-
-const { NODE_ENV, JWT_SECRET } = process.env;
 
 const getArticles = (req, res, next) => {
   Articles.find({})
     .then((articles) => res.send(articles))
 
-    .catch(next)
-}
+    .catch(next);
+};
 
 const createArticle = (req, res, next) => {
-  const { keyword, title, text, date, source, link, image, owner } = req.body;
+  const {
+    keyword, title, text, date, source, link, image,
+  } = req.body;
 
   Articles.create({
-    keyword, title, text, date, source, link, image,
-    owner: req.user._id
+    keyword,
+    title,
+    text,
+    date,
+    source,
+    link,
+    image,
+    owner: req.user._id,
   })
-    .then((article) => res.send({
+    .then(() => res.send({
       keyword, title, text, date, source, link, image,
     }))
 
-    .catch(next)
-}
+    .catch(next);
+};
 
 const deleteArticle = (req, res, next) => {
   const { articleId } = req.params;
@@ -33,22 +38,22 @@ const deleteArticle = (req, res, next) => {
   Articles.findById(articleId).select('+owner')
     .then((article) => {
       if (!article) {
-        throw new NotFoundError("Article not found.");
+        throw new NotFoundError('Article not found.');
       }
 
       if (article.owner !== req.user._id) {
-        throw new ForbiddenError("Not owner of card")
+        throw new ForbiddenError('Not owner of card');
       }
     })
 
     .then(() => Articles.findByIdAndDelete(articleId))
-    .then(() => res.send({ message: "Card deleted." }))
+    .then(() => res.send({ message: 'Card deleted.' }))
 
-    .catch(next)
-}
+    .catch(next);
+};
 
 module.exports = {
   getArticles,
   createArticle,
-  deleteArticle
-}
+  deleteArticle,
+};
