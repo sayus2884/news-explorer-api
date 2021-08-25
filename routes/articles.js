@@ -13,7 +13,7 @@ router.post('/articles', celebrate({
     date: Joi.string().required(),
     source: Joi.string().required(),
     link: Joi.string().required().custom(validateUrl),
-    image: Joi.string().required().custom(validateUrl)
+    image: Joi.string().required().custom(validateUrl),
   }),
 }), createArticle);
 router.delete('/articles/:articleId', celebrate({

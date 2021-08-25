@@ -27,7 +27,13 @@ const createArticle = (req, res, next) => {
   })
     .then((article) => res.send({
       _id: article._id,
-      keyword, title, text, date, source, link, image,
+      keyword,
+      title,
+      text,
+      date,
+      source,
+      link,
+      image,
     }))
 
     .catch(next);
