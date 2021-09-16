@@ -4,7 +4,11 @@ const NotFoundError = require('../errors/not-found-err');
 const ForbiddenError = require('../errors/forbidden-err');
 
 const getArticles = (req, res, next) => {
-  Articles.find({})
+  const user = req.user._id;
+
+  Articles.find({
+    owner: user
+  })
     .then((articles) => res.send(articles))
 
     .catch(next);
